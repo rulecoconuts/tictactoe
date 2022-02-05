@@ -4,7 +4,7 @@ import 'package:tictactoe/data/board_data.dart';
 class TicTacToeBoard extends StatefulWidget {
   int size;
   final void Function(TicTacToeWinData win, TicTacToeBoardData boardData)? onWin;
-  TicTacToeBoard(this.size, {this.onWin});
+  TicTacToeBoard(this.size, {this.onWin, Key? key}):super(key: key);
   TicTacToeBoardState createState() => TicTacToeBoardState();
 }
 
