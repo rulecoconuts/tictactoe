@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:tictactoe/board.dart';
+import 'package:tictactoe/data/board_data.dart';
 
 class TicTacToeGame extends StatefulWidget {
   final int size;
@@ -10,14 +11,21 @@ class TicTacToeGame extends StatefulWidget {
 
 class _TicTacToeGameState extends State<TicTacToeGame> {
   Key _boardKey = UniqueKey();
+  TicTacToeWinData? win;
   Widget get _title {
     return Container(
-      child: Text("Tic Tac Toe"),
+      child: Text("Tic Tac Toe", style: TextStyle(fontSize: 23)),
     );
   }
 
   String get _backgroundImageUrl {
     return "";
+  }
+
+  void onWinOrDraw(TicTacToeWinData win, TicTacToeBoardData boardData) {
+    setState(() {
+      this.win = win;
+    });
   }
 
   DecorationImage get _backgroundImage {
@@ -28,16 +36,33 @@ class _TicTacToeGameState extends State<TicTacToeGame> {
     ).image);
   }
 
+  Widget _winAlert() {
+    TicTacToeWinData winData = win as TicTacToeWinData;
+    return Positioned.fill(
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+          Card(
+            child: FittedBox(
+                child: Text(
+                    winData.draw ? "Draw!" : "Winner: ${winData.winner}!")),
+          )
+        ]));
+  }
+
   Widget get _controlPanel {
     return Container(
         decoration: BoxDecoration(color: Colors.black54),
+        padding: EdgeInsets.only(top: 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             ElevatedButton(
-              onPressed: (){
+              onPressed: () {
                 setState(() {
                   _boardKey = UniqueKey();
+                  win = null;
                 });
               },
               child: Icon(
@@ -52,7 +77,15 @@ class _TicTacToeGameState extends State<TicTacToeGame> {
   }
 
   Widget get _board {
-    return TicTacToeBoard(widget.size, key: _boardKey,);
+    return Stack(children: [
+      Positioned.fill(
+          child: TicTacToeBoard(
+        widget.size,
+        key: _boardKey,
+        onWin: onWinOrDraw,
+      )),
+      if (win != null) ...[_winAlert()]
+    ]);
   }
 
   @override

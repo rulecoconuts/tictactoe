@@ -208,7 +208,7 @@ class TicTacToeBoardState extends State<TicTacToeBoard> {
   Widget build(BuildContext context) {
     return Stack(children: [
       Positioned.fill(child: _board),
-      if (winner != null) ...[_winningLine]
+      if (winner != null && !(winner as TicTacToeWinData).draw) ...[_winningLine]
     ]);
   }
 }

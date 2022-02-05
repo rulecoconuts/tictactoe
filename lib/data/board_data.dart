@@ -16,8 +16,12 @@ class TicTacToeWinData {
   int? row = 0;
   int? column = 0;
   String winningMethod = "row";
+  bool draw;
 
-  TicTacToeWinData(this.winner, this.row, this.column, this.winningMethod);
+  TicTacToeWinData(this.winner, this.row, this.column, this.winningMethod, {this.draw=false});
+  factory TicTacToeWinData.draw(){
+    return TicTacToeWinData(null, null, null, "none", draw: true);
+  }
 }
 
 class TicTacToeBoardData extends BoardData {
@@ -25,6 +29,8 @@ class TicTacToeBoardData extends BoardData {
 
   @override
   List<List> get rep => _rep;
+
+  int numberOfMoves = 0;
 
   ///
   /// Creates a [size] by [size] TicTacToeBoard Representation
@@ -139,7 +145,13 @@ class TicTacToeBoardData extends BoardData {
   ///
   TicTacToeWinData? insert(int row, int column, dynamic element) {
     rep[row][column] = element;
+    numberOfMoves++;
+    if(isDraw()) return TicTacToeWinData.draw();
     return getWinner(row, column);
+  }
+
+  bool isDraw(){
+    return numberOfMoves == rep.length * rep.first.length;
   }
 
   ///
