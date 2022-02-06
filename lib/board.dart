@@ -1,10 +1,13 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:tictactoe/data/board_data.dart';
 
 class TicTacToeBoard extends StatefulWidget {
   int size;
-  final void Function(TicTacToeWinData win, TicTacToeBoardData boardData)? onWin;
-  TicTacToeBoard(this.size, {this.onWin, Key? key}):super(key: key);
+  final void Function(TicTacToeWinData win, TicTacToeBoardData boardData)?
+      onWin;
+  TicTacToeBoard(this.size, {this.onWin, Key? key}) : super(key: key);
   TicTacToeBoardState createState() => TicTacToeBoardState();
 }
 
@@ -75,6 +78,21 @@ class TicTacToeBoardState extends State<TicTacToeBoard> {
     }
   }
 
+  Widget _generateTileContent(Widget content) {
+    return Container(
+      decoration: BoxDecoration(
+          border: Border.all(color: Colors.grey, width: 2),
+          gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Colors.white10,
+                Colors.blueGrey,
+              ])),
+      child: Column(children:[Expanded(child: content)]),
+    );
+  }
+
   ///
   /// Fill tile
   ///
@@ -82,12 +100,11 @@ class TicTacToeBoardState extends State<TicTacToeBoard> {
     BoardTile tile = tiles[row][column];
     _BoardTileState tileState =
         (tile.key as GlobalKey).currentState as _BoardTileState;
-    tileState.setContent(FittedBox(
-      fit: BoxFit.contain,
+    tileState.setContent(_generateTileContent(FractionallySizedBox(heightFactor: 0.5, child: FittedBox(
+        fit: BoxFit.cover,
         child: Text(
-      player,
-      style: TextStyle(fontSize: 23),
-    )));
+          player,
+        )))));
     tileState.setTouchEnabled(false);
     _insertMove(row, column);
   }
@@ -101,6 +118,7 @@ class TicTacToeBoardState extends State<TicTacToeBoard> {
         (column) => BoardTile(
               row,
               column,
+              _generateTileContent(Container()),
               key: GlobalKey(),
               onTapped: _fillTile,
               touchEnabled: true,
@@ -208,7 +226,9 @@ class TicTacToeBoardState extends State<TicTacToeBoard> {
   Widget build(BuildContext context) {
     return Stack(children: [
       Positioned.fill(child: _board),
-      if (winner != null && !(winner as TicTacToeWinData).draw) ...[_winningLine]
+      if (winner != null && !(winner as TicTacToeWinData).draw) ...[
+        _winningLine
+      ]
     ]);
   }
 }
@@ -219,11 +239,11 @@ class TicTacToeBoardState extends State<TicTacToeBoard> {
 class BoardTile extends StatefulWidget {
   final int row;
   final int column;
-  final Widget? content;
+  final Widget child;
   final bool touchEnabled;
   void Function(int row, int column)? onTapped;
-  BoardTile(this.row, this.column,
-      {this.touchEnabled = false, this.content, Key? key, this.onTapped})
+  BoardTile(this.row, this.column, this.child,
+      {this.touchEnabled = false, Key? key, this.onTapped})
       : super(key: key);
   _BoardTileState createState() => _BoardTileState();
 }
@@ -235,7 +255,7 @@ class _BoardTileState extends State<BoardTile> {
   @override
   void initState() {
     super.initState();
-    _content = widget.content;
+    _content = widget.child;
     _touchEnabled = widget.touchEnabled;
   }
 
@@ -251,13 +271,7 @@ class _BoardTileState extends State<BoardTile> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-        onTap: _callOnTapped,
-        child: Container(
-          decoration:
-              BoxDecoration(border: Border.all(color: Colors.grey, width: 2)),
-          child: Center(child: _content ?? Container()),
-        ));
+    return GestureDetector(onTap: _callOnTapped, child: _content);
   }
 
   void _callOnTapped() {

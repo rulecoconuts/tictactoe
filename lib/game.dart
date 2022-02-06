@@ -43,11 +43,16 @@ class _TicTacToeGameState extends State<TicTacToeGame> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-          Card(
-            child: FittedBox(
-                child: Text(
-                    winData.draw ? "Draw!" : "Winner: ${winData.winner}!")),
-          )
+          Expanded(
+              child: FractionallySizedBox(
+                  widthFactor: 0.3,
+                  heightFactor: 0.5,
+                  child: Card(
+                    child: FittedBox(
+                        child: Text(winData.draw
+                            ? "Draw!"
+                            : "Winner: ${winData.winner}!")),
+                  )))
         ]));
   }
 
@@ -58,20 +63,24 @@ class _TicTacToeGameState extends State<TicTacToeGame> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  _boardKey = UniqueKey();
-                  win = null;
-                });
-              },
-              child: Icon(
-                Icons.replay_outlined,
-                size: 40,
-              ),
-              style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(Colors.green)),
-            )
+            Expanded(
+                flex: 1,
+                child: ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      _boardKey = UniqueKey();
+                      win = null;
+                    });
+                  },
+                  child: FittedBox(
+                      fit: BoxFit.cover,
+                      child: Icon(
+                        Icons.replay_outlined,
+                      )),
+                  style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all(Colors.green)),
+                )),
+            Expanded(child: Container(), flex: 18)
           ],
         ));
   }
